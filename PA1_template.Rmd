@@ -12,12 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 Loading and preprocessing the data.
 
 ```{r}
-setwd("C:/Users/ezeki/Documents/wd")
-if(!file.exists("wd")) dir.create("wd")
-url <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
-download.file(url, destfile=("./wd"))
-unzip("./wd/Factivity.zip", exdir="./wd")
-activity <- read.csv("./wd/activity.csv")
+activity <- read.csv("activity.csv")
 ```
 
 Read data into R for analysis and take a look at the data by using the head() function.
@@ -64,7 +59,7 @@ interval <- aggregate(steps ~ interval, data, mean)
 
 plot a time series
 ```{r}
-plot(x = interval$interval, y = interval$steps, type = "l", main = "Time Series Plot of the 5-Minute Interval depicting the average daily activity pattern", xlab = "5-Minute Interval", ylab = "Average Number of Total Steps Taken")
+plot(x = interval$interval, y = interval$steps, type = "l", main = "Time Series Plot of the average daily activity pattern", xlab = "5-Minute Interval", ylab = "Average Number of Total Steps Taken")
 ```
 
 ### Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
@@ -73,14 +68,14 @@ plot(x = interval$interval, y = interval$steps, type = "l", main = "Time Series 
 interval[interval$steps==max(interval$steps),]
 ```
 
-## Imputing missing values
+### Imputing missing values
 Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs).
 I will use the sum() and is.na() to do this.
 ```{r}
 sum(is.na(activitydata))
 ```
 
-## Code to describe and show a strategy for imputing missing data
+### Code to describe and show a strategy for imputing missing data
 
 Replace NA values with the mean results for five minute intervals
 
@@ -89,7 +84,7 @@ new_data<- activitydata
 new_data$steps[is.na(new_data$steps)] <- mean(data$steps, na.rm=TRUE)
 ```
 
-## Histogram of the total number of steps taken each day after missing values are imputed
+### Histogram of the total number of steps taken each day after missing values are imputed
 
 ```{r}
 totalsteps <- aggregate(steps ~ date, new_data, sum)
@@ -110,8 +105,8 @@ Both these values, mean and median for these two data sets is equal[mean=10766.1
 ### What is the impact of imputing missing data on the estimates of the total daily number of steps?
 When you use the mean or median to impute as missing values there is negligible change on the estimates.
 
-# Are there differences in activity patterns between weekdays and weekends?
-## Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+### Are there differences in activity patterns between weekdays and weekends?
+### Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 First load the dplyr library
 
 ```{r}
@@ -121,7 +116,7 @@ mutate(typeofday= ifelse(weekdays(new_data$date)=="Saturday" | weekdays(new_data
 head(new_data)
 ```
 
-## Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
+### Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
 Get the average number of steps taken, averaged across all days for each 5-minute
 
 ```{r}
@@ -132,5 +127,5 @@ newinterval <- aggregate(steps ~ interval + typeofday, new_data, mean)
 
 ```{r}
 library(lattice)
-xyplot(steps ~ interval | typeofday, newinterval, type = "l", layout = c(1,2), main = "Time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days", xlab = "5-Minute Interval", ylab = "Average Number of Steps Taken")
+xyplot(steps ~ interval | typeofday, newinterval, type = "l", layout = c(1,2), main = "Time Series Plot of the Average of Total Steps (weekday vs. weekend)", xlab = "5-Minute Interval", ylab = "Average Number of Steps Taken")
 ```
